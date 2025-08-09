@@ -1,11 +1,15 @@
+// ListeningView.swift
+
 import SwiftUI
 
 struct ListeningView: View {
     @EnvironmentObject var appState: AppState
+    @State private var hasTriggered = false
 
     var body: some View {
         ZStack {
-            Color(.systemBackground).edgesIgnoringSafeArea(.all)
+            Color(.systemBackground)
+                .edgesIgnoringSafeArea(.all)
 
             VStack(spacing: 20) {
                 Spacer()
@@ -28,16 +32,25 @@ struct ListeningView: View {
                     .foregroundColor(.primary)
 
                 Spacer()
-
-                Button("Next (Simulate Trigger)") {
-                    appState.currentScreen = .recording
-                }
-                .padding()
-                .background(Color("MochaMousse"))
-                .foregroundColor(.white)
-                .cornerRadius(10)
             }
             .padding()
         }
+        .onAppear {
+            // Auto-trigger the recording transition after 4 seconds
+            guard !hasTriggered else { return }
+            hasTriggered = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                withAnimation {
+                    appState.currentScreen = .recording
+                }
+            }
+        }
+    }
+}
+
+struct ListeningView_Previews: PreviewProvider {
+    static var previews: some View {
+        ListeningView()
+            .environmentObject(AppState())
     }
 }
